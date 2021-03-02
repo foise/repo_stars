@@ -1,3 +1,0 @@
-class Repo {
-  String repoName;
-}
