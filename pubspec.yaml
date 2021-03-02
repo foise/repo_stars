@@ -15,6 +15,7 @@ dependencies:
   provider: ^4.3.2+4
   github: ^7.0.4
   intl: ^0.16.1
+  fl_chart: ^0.12.3
 
 dev_dependencies:
   flutter_test:

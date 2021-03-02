@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:github/github.dart';
 import 'package:provider/provider.dart';
-import 'package:repo_stars/viewmodels/graph_vm.dart';
+import 'package:repo_stars/bloc/app_model.dart';
 import 'package:repo_stars/views/repo_card.dart';
 
 class ReposList extends StatefulWidget {

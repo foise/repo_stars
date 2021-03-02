@@ -1,18 +1,18 @@
 import 'package:github/github.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import 'package:repo_stars/api/github_api.dart';
-import 'package:repo_stars/models/github_repos.dart';
-import 'package:repo_stars/models/star.dart';
-import 'package:repo_stars/service/github_service.dart';
+import 'package:repo_stars/data/api/github_api.dart';
+import 'package:repo_stars/data/models/github_repos.dart';
+import 'package:repo_stars/data/models/star.dart';
+import 'package:repo_stars/data/service/github_service.dart';
 
 class GraphViewModel extends ChangeNotifier {
   String _accountName;
   GitHubRepos _repos;
-  String _activeRepo;
+  String _activeRepoName;
 
   String get accountName => _accountName;
-  String get activeRepo => _activeRepo;
+  String get activeRepoName => _activeRepoName;
   GitHubRepos get repos => _repos;
 
   GitHubService _gitHubService;
@@ -30,5 +30,9 @@ class GraphViewModel extends ChangeNotifier {
     _repos.reposList.forEach((Repository repo) => print(repo.name));
     print(_repos.reposList.length);
     notifyListeners();
+  }
+
+  void setActiveRepo(String repo) {
+    _activeRepoName = repo;
   }
 }

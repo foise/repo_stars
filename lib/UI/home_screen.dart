@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:repo_stars/listeners/input_field.dart';
-import 'package:repo_stars/listeners/repos_list.dart';
+import 'package:repo_stars/UI/listeners/input_field.dart';
+import 'package:repo_stars/UI/listeners/repos_list.dart';
 
 class HomeView extends StatefulWidget {
   HomeView({Key key, this.title}) : super(key: key);

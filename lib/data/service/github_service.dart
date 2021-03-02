@@ -1,5 +1,5 @@
-import 'package:repo_stars/api/github_api.dart';
-import 'package:repo_stars/models/github_repos.dart';
+import 'package:repo_stars/data/api/github_api.dart';
+import 'package:repo_stars/data/models/github_repos.dart';
 
 class GitHubService {
   final GitHubApi gitHubApi;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:github/github.dart';
-import 'package:repo_stars/utils/github_colors.dart';
+import 'package:repo_stars/data/utils/github_colors.dart';
 import 'package:intl/intl.dart';
 
 class RepoCard extends StatelessWidget {

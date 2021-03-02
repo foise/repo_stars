@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:github/github.dart';
-import 'package:repo_stars/models/github_repos.dart';
+import 'package:repo_stars/data/models/github_repos.dart';
 
 class GitHubApi {
   GitHub github;
@@ -8,10 +8,7 @@ class GitHubApi {
   List<Repository> reposListFromJson = [];
 
   void getApi() {
-    github = GitHub(
-      auth:
-          Authentication.withToken("b64bb6890c1e26aeb7b2d94d64858ff14608bb37"),
-    );
+    github = GitHub(auth: Authentication.anonymous());
   }
 
   Future<GitHubRepos> getRepos(String accName) async {

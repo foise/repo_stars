@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:repo_stars/viewmodels/graph_vm.dart';
-import 'package:repo_stars/views/home_view.dart';
+import 'package:repo_stars/bloc/app_model.dart';
+import 'package:repo_stars/UI/home_screen.dart';
 
 void main() {
   runApp(

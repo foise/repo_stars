@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:repo_stars/viewmodels/graph_vm.dart';
+import 'package:repo_stars/bloc/app_model.dart';
 
 class InputField extends StatefulWidget {
   @override
