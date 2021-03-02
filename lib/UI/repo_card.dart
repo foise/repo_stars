@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:github/github.dart';
 import 'package:repo_stars/data/utils/github_colors.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:repo_stars/bloc/app_model.dart';
 
 class RepoCard extends StatelessWidget {
   final Repository repo;
@@ -16,7 +18,8 @@ class RepoCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.deepPurple.withAlpha(50),
         onTap: () {
-          print('Card tapped.');
+          Provider.of<GraphViewModel>(context, listen: false)
+              .getRepoStars(RepositorySlug(repo.owner.login, repo.name));
         },
         child: Container(
           padding: EdgeInsets.only(top: 8, left: 12),
