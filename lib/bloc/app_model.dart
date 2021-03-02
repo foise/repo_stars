@@ -9,7 +9,7 @@ import 'package:repo_stars/data/service/github_service.dart';
 class GraphViewModel extends ChangeNotifier {
   String _accountName;
   GitHubRepos _repos;
-  RepoStars repoStars;
+  RepoStars _repoStars;
   String _activeRepoName;
 
   String get accountName => _accountName;
@@ -39,6 +39,6 @@ class GraphViewModel extends ChangeNotifier {
 
   Future<void> getRepoStars(RepositorySlug slug) async {
     setActiveRepo(slug.name);
-    repoStars = await _gitHubService.getStars(slug);
+    _repoStars = await _gitHubService.getStars(slug);
   }
 }

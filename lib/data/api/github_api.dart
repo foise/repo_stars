@@ -28,12 +28,12 @@ class GitHubApi {
   }
 
   Future<RepoStars> getStars(RepositorySlug slug) async {
-    final requestUrl =
+    final starsRequestUrl =
         'https://api.github.com/repos/${slug.owner}/${slug.name}/stargazers';
 
-    final response = await httpClient.get(requestUrl,
+    final response = await httpClient.get(starsRequestUrl,
         headers: {'accept': 'application/vnd.github.v3.star+json'});
-    repoStars = RepoStars(slug.name);
+    repoStars = RepoStars(slug.name, slug.owner);
     repoStars.fromJSON(jsonDecode(response.body));
     return repoStars;
   }
