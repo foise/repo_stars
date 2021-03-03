@@ -14,8 +14,8 @@ class _ReposListState extends State<ReposList> {
   Widget build(BuildContext context) {
     return Consumer<GraphViewModel>(
       builder: (context, graphModel, child) {
-        if (graphModel.repos != null) {
-          return graphModel.repos.reposList.length > 0
+        if (!graphModel.requestError) {
+          return !graphModel.requestPending
               ? ListView.builder(
                   shrinkWrap: false,
                   padding: EdgeInsets.only(
@@ -27,15 +27,17 @@ class _ReposListState extends State<ReposList> {
                     return RepoCard(repo: repo);
                   },
                 )
-              : Container(
+              : Center(
+                  child: Container(
                   height: 50,
-                  child: Icon(Icons.bus_alert),
-                );
+                  child: Text("Request pending"),
+                ));
         } else {
-          return Container(
+          return Center(
+              child: Container(
             height: 50,
-            child: Icon(Icons.bus_alert),
-          );
+            child: Text("Enter a valid GitHub account"),
+          ));
         }
       },
     );

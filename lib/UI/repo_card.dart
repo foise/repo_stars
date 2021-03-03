@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:repo_stars/bloc/app_model.dart';
 
+import 'chart_screen.dart';
+
 class RepoCard extends StatelessWidget {
   final Repository repo;
   final GitHubColors colors = GitHubColors();
@@ -18,8 +20,14 @@ class RepoCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.deepPurple.withAlpha(50),
         onTap: () {
-          Provider.of<GraphViewModel>(context, listen: false)
-              .getRepoStars(RepositorySlug(repo.owner.login, repo.name));
+          Provider.of<GraphViewModel>(context, listen: false).getRepoStars(
+            RepositorySlug(repo.owner.login, repo.name),
+          );
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return GraphScreen(
+              repoName: '${repo.owner.login}/${repo.name}',
+            );
+          }));
         },
         child: Container(
           padding: EdgeInsets.only(top: 8, left: 12),
@@ -47,10 +55,11 @@ class RepoCard extends StatelessWidget {
                       SizedBox(
                         width: 1,
                       ),
-                      Text(
-                        '${repo.language}',
-                        style: TextStyle(fontSize: 13.5),
-                      ),
+                      if (repo.language != null)
+                        Text(
+                          '${repo.language}',
+                          style: TextStyle(fontSize: 13.5),
+                        ),
                       SizedBox(
                         width: 10,
                       ),
@@ -67,7 +76,7 @@ class RepoCard extends StatelessWidget {
                         width: 10,
                       ),
                       Text(
-                        'Updated ${DateFormat.yMMMMd().format(repo.updatedAt)}',
+                        'Updated ${DateFormat.yMMMMd().format(repo.pushedAt)}',
                         style: TextStyle(fontSize: 13.5),
                       ),
                     ],

@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepPurple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomeView(title: 'Repo Stars'),
+      home: HomeScreen(title: 'Repo Stars'),
     );
   }
 }

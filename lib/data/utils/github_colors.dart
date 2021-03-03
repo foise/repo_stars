@@ -201,7 +201,11 @@ class GitHubColors {
   };
 
   int getColor(String colorName) {
-    String colorString = '0xFF' + gitHubColors[colorName];
-    return int.parse(colorString);
+    if (gitHubColors.containsKey(colorName)) {
+      String colorString = '0xFF' + gitHubColors[colorName];
+      return int.parse(colorString);
+    } else {
+      return int.parse('0xFF000000');
+    }
   }
 }

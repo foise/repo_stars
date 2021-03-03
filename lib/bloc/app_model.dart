@@ -7,6 +7,9 @@ import 'package:repo_stars/data/models/repo_stars.dart';
 import 'package:repo_stars/data/service/github_service.dart';
 
 class GraphViewModel extends ChangeNotifier {
+  bool requestError;
+  bool requestPending;
+
   String _accountName;
   GitHubRepos _repos;
   RepoStars _repoStars;
@@ -15,6 +18,7 @@ class GraphViewModel extends ChangeNotifier {
   String get accountName => _accountName;
   String get activeRepoName => _activeRepoName;
   GitHubRepos get repos => _repos;
+  RepoStars get repoStars => _repoStars;
 
   GitHubService _gitHubService;
   GitHubApi _gitHubApi;
@@ -27,10 +31,15 @@ class GraphViewModel extends ChangeNotifier {
 
   Future<void> updateRepos(String newAccName) async {
     _accountName = newAccName;
-    _repos = await _gitHubService.getRepos(_accountName);
-    _repos.reposList.forEach((Repository repo) => print(repo.name));
-    print(_repos.reposList.length);
-    notifyListeners();
+    requestError = false;
+    requestPending = true;
+    await _gitHubService.getRepos(_accountName).then((value) {
+      requestPending = false;
+      _repos = value;
+      _repos.reposList.forEach((Repository repo) => print(repo.name));
+      print(_repos.reposList.length);
+      notifyListeners();
+    }).catchError((onError) => handleError());
   }
 
   void setActiveRepo(String repo) {
@@ -39,6 +48,24 @@ class GraphViewModel extends ChangeNotifier {
 
   Future<void> getRepoStars(RepositorySlug slug) async {
     setActiveRepo(slug.name);
-    _repoStars = await _gitHubService.getStars(slug);
+    requestError = false;
+    requestPending = true;
+    await _gitHubService.getStars(slug).then((value) {
+      requestPending = false;
+      _repoStars = value;
+      //check years since github launch
+      for (var j = 2008; j < DateTime.now().year + 1; j++) {
+        for (var i = 1; i < 13; i++) {
+          _repoStars.mapStars(j, i);
+        }
+      }
+      notifyListeners();
+    }).catchError((onError) => handleError());
+  }
+
+  void handleError() {
+    requestPending = false;
+    requestError = true;
+    notifyListeners();
   }
 }

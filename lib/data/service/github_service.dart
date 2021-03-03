@@ -12,6 +12,6 @@ class GitHubService {
   }
 
   Future<RepoStars> getStars(RepositorySlug slug) async {
-    gitHubApi.getStars(slug);
+    return await gitHubApi.getStars(slug);
   }
 }

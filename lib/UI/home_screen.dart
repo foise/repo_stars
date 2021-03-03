@@ -3,15 +3,15 @@ import 'package:provider/provider.dart';
 import 'package:repo_stars/UI/listeners/input_field.dart';
 import 'package:repo_stars/UI/listeners/repos_list.dart';
 
-class HomeView extends StatefulWidget {
-  HomeView({Key key, this.title}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  HomeScreen({Key key, this.title}) : super(key: key);
   final String title;
 
   @override
-  _HomeViewState createState() => _HomeViewState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

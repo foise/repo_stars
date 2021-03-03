@@ -46,7 +46,8 @@ class _InputFieldState extends State<InputField> {
             IconButton(
               icon: new Icon(Icons.search),
               onPressed: () {
-                model.updateRepos(nameEditController.text);
+                if (nameEditController.text != '')
+                  model.updateRepos(nameEditController.text);
               },
             ),
             SizedBox(width: 10),
@@ -55,7 +56,9 @@ class _InputFieldState extends State<InputField> {
                 controller: nameEditController,
                 decoration: InputDecoration.collapsed(
                     hintText: "Enter Github Account Name"),
-                onSubmitted: (String name) => {model.updateRepos(name)},
+                onSubmitted: (String name) {
+                  if (name != '') model.updateRepos(name);
+                },
               ),
             ),
           ],
