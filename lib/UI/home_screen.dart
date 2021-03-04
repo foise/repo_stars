@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:repo_stars/UI/listeners/input_field.dart';
 import 'package:repo_stars/UI/listeners/repos_list.dart';
 

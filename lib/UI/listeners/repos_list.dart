@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:github/github.dart';
 import 'package:provider/provider.dart';
 import 'package:repo_stars/bloc/app_model.dart';
-import 'package:repo_stars/UI/repo_card.dart';
+import 'package:repo_stars/UI/widgets/repo_card.dart';
 
 class ReposList extends StatefulWidget {
   @override
@@ -30,13 +30,19 @@ class _ReposListState extends State<ReposList> {
               : Center(
                   child: Container(
                   height: 50,
-                  child: Text("Request pending"),
+                  child: Text(
+                    "Request pending",
+                    style: TextStyle(fontSize: 20),
+                  ),
                 ));
         } else {
           return Center(
               child: Container(
             height: 50,
-            child: Text("Enter a valid GitHub account"),
+            child: Text(
+              "Enter a valid GitHub account",
+              style: TextStyle(fontSize: 20),
+            ),
           ));
         }
       },

@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:github/github.dart';
 import 'package:repo_stars/data/models/github_repos.dart';
@@ -31,22 +29,19 @@ class GitHubApi {
 
   Future<RepoStars> getStars(RepositorySlug slug) async {
     if (github == null) getApi();
-
     await github.repositories.getRepository(slug).then((value) async {
-      repoStars = RepoStars(value);
+      repoStars = new RepoStars(value);
     });
 
-    int maxPage = (repoStars.repo.stargazersCount / 30).ceil();
+    PaginationHelper helper = PaginationHelper(github);
+    await helper.fetchStreamed(
+      'GET',
+      'https://api.github.com/repos/${slug.owner}/${slug.name}/stargazers',
+      headers: {'accept': 'application/vnd.github.v3.star+json'},
+    ).forEach((element) {
+      repoStars.fromJSON(jsonDecode(element.body));
+    });
 
-    for (int page = 1; page <= maxPage; page++) {
-      String starsRequestUrl =
-          'https://api.github.com/repos/${slug.owner}/${slug.name}/stargazers?page=$page&per_page=30';
-      await httpClient.get(starsRequestUrl, headers: {
-        'accept': 'application/vnd.github.v3.star+json',
-      }).then((value) {
-        if (value.statusCode == 200) repoStars.fromJSON(jsonDecode(value.body));
-      });
-    }
     return repoStars;
   }
 }

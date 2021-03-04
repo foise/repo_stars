@@ -4,8 +4,7 @@ import 'package:repo_stars/data/utils/github_colors.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:repo_stars/bloc/app_model.dart';
-
-import 'chart_screen.dart';
+import 'package:repo_stars/main.dart';
 
 class RepoCard extends StatelessWidget {
   final Repository repo;
@@ -20,14 +19,12 @@ class RepoCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.deepPurple.withAlpha(50),
         onTap: () {
+          if (Provider.of<GraphViewModel>(context, listen: false)
+              .requestPending) return;
           Provider.of<GraphViewModel>(context, listen: false).getRepoStars(
             RepositorySlug(repo.owner.login, repo.name),
           );
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return GraphScreen(
-              repoName: '${repo.owner.login}/${repo.name}',
-            );
-          }));
+          navigatorKey.currentState.pushNamed('/chart_screen');
         },
         child: Container(
           padding: EdgeInsets.only(top: 8, left: 12),
