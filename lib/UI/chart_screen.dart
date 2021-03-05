@@ -15,7 +15,7 @@ class _ChartScreenState extends State<ChartScreen> {
     return Consumer<GraphViewModel>(builder: (context, graphModel, child) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('${graphModel.accountName}/${graphModel.activeRepoName}'),
+          title: Text('${graphModel.activeRepo.fullName}'),
         ),
         body: Container(
           decoration: const BoxDecoration(

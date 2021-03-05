@@ -6,16 +6,20 @@ import 'package:repo_stars/data/models/github_repos.dart';
 import 'package:repo_stars/data/models/repo_stars.dart';
 import 'package:repo_stars/data/service/github_service.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:repo_stars/data/service/save_data.dart';
 import 'package:repo_stars/main.dart';
+import 'package:connectivity/connectivity.dart';
 
 class GraphViewModel extends ChangeNotifier {
   bool requestError;
   bool requestPending;
+  SaveData saveData;
+  var connectResult;
 
   String _accountName;
   GitHubRepos _repos;
   RepoStars _repoStars;
-  String _activeRepoName;
+  Repository _activeRepo;
 
   int _selectedYear;
   List<DropdownMenuItem<int>> yearSelector = [];
@@ -23,12 +27,12 @@ class GraphViewModel extends ChangeNotifier {
   String _selectedMonth;
 
   String get accountName => _accountName;
-  String get activeRepoName => _activeRepoName;
   GitHubRepos get repos => _repos;
   RepoStars get repoStars => _repoStars;
   int get selectedYear => _selectedYear;
   charts.BarChart get chart => _chart;
   String get selectedMonth => _selectedMonth;
+  Repository get activeRepo => _activeRepo;
 
   GitHubService _gitHubService;
   GitHubApi _gitHubApi;
@@ -37,53 +41,126 @@ class GraphViewModel extends ChangeNotifier {
     _gitHubApi = GitHubApi();
     _gitHubApi.getApi();
     _gitHubService = GitHubService(_gitHubApi);
+    saveData = SaveData();
     requestError = true;
     requestPending = false;
     _selectedYear = null;
+    _activeRepo = Repository(fullName: '');
   }
 
   Future<void> updateRepos(String newAccName) async {
-    _accountName = newAccName;
-    setRequestError(false);
-    setRequestPending(true);
-    await _gitHubService.getRepos(_accountName).then((value) {
-      setRequestPending(false);
-      _repos = value;
-      _repos.reposList.forEach((Repository repo) => print(repo.name));
-      print(_repos.reposList.length);
-      notifyListeners();
-    }).catchError((onError) => handleError(onError));
-  }
+    if (_accountName != newAccName) {
+      connectResult = await (Connectivity().checkConnectivity());
+      await saveData.openReposDatabase();
+      _accountName = newAccName;
+      if (connectResult != ConnectivityResult.none) {
+        if (requestPending) {
+          showRequestPendingAlert();
+          return;
+        }
 
-  void setActiveRepo(String repo) {
-    _activeRepoName = repo;
-  }
-
-  Future<void> getRepoStars(RepositorySlug slug) async {
-    if (requestPending) return;
-    setActiveRepo(slug.name);
-    setRequestError(false);
-    setRequestPending(true);
-    _repoStars = null;
-    _chart = null;
-    await _gitHubService.getStars(slug).then((value) {
-      setRequestPending(false);
-      _repoStars = value;
-
-      _repoStars.listOfYears.clear();
-
-      //check years since repo creation
-      for (var j = _repoStars.repo.createdAt.year;
-          j < DateTime.now().year + 1;
-          j++) {
-        _repoStars.listOfYears.add(j);
-        for (var i = 1; i < 13; i++) {
-          _repoStars.mapStars(j, i);
+        setRequestError(false);
+        setRequestPending(true);
+        try {
+          await _gitHubService.getRepos(_accountName).then((value) async {
+            setRequestPending(false);
+            _repos = value;
+            await saveData.saveRepos(_repos);
+            _repos.reposList.forEach((Repository repo) => print(repo.fullName));
+            print(_repos.reposList.length);
+            notifyListeners();
+          });
+        } catch (e) {
+          handleError(e);
+        }
+      } else {
+        showNoConnectionAlert();
+        setRequestPending(true);
+        _repos = GitHubRepos(_accountName);
+        try {
+          _repos.reposList = await saveData.getReposFromDatabase(_accountName);
+          setRequestPending(false);
+          setRequestError(false);
+        } catch (e) {
+          handleError(e);
         }
       }
-      buildYearSelector();
       notifyListeners();
-    }).catchError((onError) => handleError(onError));
+    }
+  }
+
+  Future<void> getRepoStarsFromDataBase() async {
+    _repoStars = RepoStars(activeRepo);
+    _repoStars.repoStarsList =
+        await saveData.getStarsFromDatabase(activeRepo.name, accountName);
+    _repoStars.listOfYears.clear();
+    //check years since repo creation
+    for (var j = _repoStars.repo.createdAt.year;
+        j < DateTime.now().year + 1;
+        j++) {
+      _repoStars.listOfYears.add(j);
+      for (var i = 1; i < 13; i++) {
+        _repoStars.mapStars(j, i);
+      }
+    }
+  }
+
+  Future<void> getRepoStars(Repository repo) async {
+    if (_activeRepo.fullName != repo.fullName) {
+      RepositorySlug slug = new RepositorySlug(_accountName, repo.name);
+      connectResult = await (Connectivity().checkConnectivity());
+      _repoStars = null;
+      _chart = null;
+      if (connectResult != ConnectivityResult.none) {
+        if (requestPending) {
+          showRequestPendingAlert();
+          return;
+        }
+        setRequestError(false);
+        setRequestPending(true);
+        try {
+          await _gitHubService.getStars(slug).then((value) async {
+            await flutterLocalNotificationsPlugin.show(
+              0,
+              'Repo Stars',
+              'Stars for ${slug.owner}/${slug.name} are loaded!',
+              platformChannelSpecifics,
+            );
+
+            setRequestPending(false);
+            _repoStars = value;
+            saveData.saveRepoStars(value, accountName);
+            _repoStars.listOfYears.clear();
+
+            //check years since repo creation
+            for (var j = _repoStars.repo.createdAt.year;
+                j < DateTime.now().year + 1;
+                j++) {
+              _repoStars.listOfYears.add(j);
+              for (var i = 1; i < 13; i++) {
+                _repoStars.mapStars(j, i);
+              }
+            }
+            buildYearSelector();
+            notifyListeners();
+          });
+        } catch (e) {
+          handleError(e);
+        }
+      } else {
+        showNoConnectionAlert();
+        setRequestPending(true);
+        try {
+          await getRepoStarsFromDataBase();
+          setRequestPending(false);
+          setRequestError(false);
+        } catch (e) {
+          handleError(e);
+        }
+        buildYearSelector();
+        notifyListeners();
+      }
+    }
   }
 
   void buildYearSelector() {
@@ -160,6 +237,52 @@ class GraphViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void showRequestPendingAlert() {
+    showDialog(
+      context: navigatorKey.currentContext,
+      builder: (context) => AlertDialog(
+        content: Text("Request is already pending"),
+        actions: [
+          TextButton(
+            onPressed: () => navigatorKey.currentState.pop(),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void showNoConnectionAlert() {
+    showDialog(
+      context: navigatorKey.currentContext,
+      builder: (context) => AlertDialog(
+        title: Text("No internet connection"),
+        content: Text("Fetching from local database..."),
+        actions: [
+          TextButton(
+            onPressed: () => navigatorKey.currentState.pop(),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void showNoReposAlert() {
+    showDialog(
+      context: navigatorKey.currentContext,
+      builder: (context) => AlertDialog(
+        content: Text("No Repos found"),
+        actions: [
+          TextButton(
+            onPressed: () => navigatorKey.currentState.pop(),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void setRequestPending(bool value) {
     requestPending = value;
     notifyListeners();
@@ -178,6 +301,11 @@ class GraphViewModel extends ChangeNotifier {
 
   void setSelectedMonth(String month) {
     _selectedMonth = month;
+    notifyListeners();
+  }
+
+  void setActiveRepo(Repository repo) {
+    _activeRepo = repo;
     notifyListeners();
   }
 

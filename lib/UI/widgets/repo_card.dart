@@ -19,11 +19,10 @@ class RepoCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.deepPurple.withAlpha(50),
         onTap: () {
-          if (Provider.of<GraphViewModel>(context, listen: false)
-              .requestPending) return;
-          Provider.of<GraphViewModel>(context, listen: false).getRepoStars(
-            RepositorySlug(repo.owner.login, repo.name),
-          );
+          Provider.of<GraphViewModel>(context, listen: false)
+              .getRepoStars(repo);
+          Provider.of<GraphViewModel>(context, listen: false)
+              .setActiveRepo(repo);
           navigatorKey.currentState.pushNamed('/chart_screen');
         },
         child: Container(
@@ -36,7 +35,7 @@ class RepoCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${repo.owner.login}/${repo.name}',
+                    '${repo.fullName}',
                     style: TextStyle(fontWeight: FontWeight.w500),
                   ),
                   SizedBox(

@@ -37,7 +37,9 @@ class GitHubApi {
     await helper.fetchStreamed(
       'GET',
       'https://api.github.com/repos/${slug.owner}/${slug.name}/stargazers',
-      headers: {'accept': 'application/vnd.github.v3.star+json'},
+      headers: {
+        'accept': 'application/vnd.github.v3.star+json',
+      },
     ).forEach((element) {
       repoStars.fromJSON(jsonDecode(element.body));
     });

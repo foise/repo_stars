@@ -22,9 +22,9 @@ class _ReposListState extends State<ReposList> {
                       top: 10.0, bottom: 20.0, left: 10.0, right: 10.0),
                   itemCount: graphModel.repos.reposList.length,
                   itemBuilder: (context, position) {
-                    Repository repo =
+                    Repository newrepo =
                         graphModel.repos.reposList.elementAt(position);
-                    return RepoCard(repo: repo);
+                    return RepoCard(repo: newrepo);
                   },
                 )
               : Center(

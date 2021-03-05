@@ -16,7 +16,7 @@ class _StarsScreenState extends State<StarsScreen> {
           graphModel.selectedYear, graphModel.selectedMonth);
       return Scaffold(
         appBar: AppBar(
-          title: Text('${graphModel.accountName}/${graphModel.activeRepoName}'),
+          title: Text('${graphModel.activeRepo.fullName}'),
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

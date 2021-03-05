@@ -138,8 +138,6 @@ class RepoStars {
     for (var star in repoStarsList) {
       if (star.dateStarred.month == month && star.dateStarred.year == year) {
         starsPerMonth[year][monthName]++;
-        // print(
-        //     "$year $monthName stars count: ${starsPerMonth[year][monthName]}");
       }
     }
   }
